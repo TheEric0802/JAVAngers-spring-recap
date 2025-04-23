@@ -76,7 +76,7 @@ class TodoControllerTest {
                         "status": "OPEN"
                     }
                 """))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(content().json("""
                     {
                         "description": "test",
@@ -109,10 +109,16 @@ class TodoControllerTest {
     }
 
     @Test
-    void deleteTodo_shouldReturn200_whenCalledWithId() throws Exception {
+    void deleteTodo_shouldReturn204_whenCalledWithExistingId() throws Exception {
         repo.save(new Todo("4", "test4", TodoStatus.DONE));
 
         mockMvc.perform(delete("/api/todo/4"))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void deleteTodo_shouldReturn404_whenCalledWithNonExistingId() throws Exception {
+        mockMvc.perform(delete("/api/todo/3000"))
+                .andExpect(status().isNotFound());
     }
 }

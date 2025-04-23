@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.javangersspringrecap.model.Todo;
 import org.example.javangersspringrecap.model.dto.TodoDTO;
 import org.example.javangersspringrecap.service.TodoService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class TodoController {
         return todoService.getTodoById(id);
     }
 
-    @PostMapping
+    @PostMapping @ResponseStatus(HttpStatus.CREATED)
     public Todo createTodo(@RequestBody TodoDTO todoDTO) {
         return todoService.createTodo(todoDTO);
     }
@@ -33,7 +34,7 @@ public class TodoController {
         return todoService.updateTodo(id, todoDTO);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}") @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTodo(@PathVariable String id) {
         todoService.getTodoById(id);
         todoService.deleteTodo(id);
