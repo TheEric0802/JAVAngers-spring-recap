@@ -29,4 +29,12 @@ public class TodoService {
         repo.save(todo);
         return todo;
     }
+
+    public Todo updateTodo(String id, TodoDTO todoDTO) {
+        Todo todo = getTodoById(id);
+        todo.setDescription(todoDTO.getDescription());
+        todo.setStatus(todoDTO.getStatus());
+        repo.save(todo);
+        return todo;
+    }
 }
