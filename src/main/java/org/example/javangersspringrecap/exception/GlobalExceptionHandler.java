@@ -15,4 +15,9 @@ public class GlobalExceptionHandler {
     public ErrorMessage handleException(Exception e) {
         return new ErrorMessage(e.getMessage(), LocalDateTime.now());
     }
+
+    @ExceptionHandler(TodoNotFoundException.class) @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorMessage handleTodoNotFoundException(Exception e) {
+        return new ErrorMessage(e.getMessage(), LocalDateTime.now());
+    }
 }

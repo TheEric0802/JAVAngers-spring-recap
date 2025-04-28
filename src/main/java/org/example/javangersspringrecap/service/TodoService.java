@@ -1,12 +1,11 @@
 package org.example.javangersspringrecap.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.javangersspringrecap.exception.TodoNotFoundException;
 import org.example.javangersspringrecap.model.Todo;
 import org.example.javangersspringrecap.model.dto.TodoDTO;
 import org.example.javangersspringrecap.repository.TodoRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -20,8 +19,8 @@ public class TodoService {
         return repo.findAll();
     }
 
-    public Todo getTodoById(String id) {
-        return repo.findById(id).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND) );
+    public Todo getTodoById(String id) throws TodoNotFoundException {
+        return repo.findById(id).orElseThrow( () -> new TodoNotFoundException("Todo with id " + id + " not found") );
     }
 
     public Todo createTodo(TodoDTO todoDTO) {
@@ -30,7 +29,7 @@ public class TodoService {
         return todo;
     }
 
-    public Todo updateTodo(String id, TodoDTO todoDTO) {
+    public Todo updateTodo(String id, TodoDTO todoDTO) throws TodoNotFoundException {
         Todo todo = getTodoById(id);
         todo.setDescription(todoDTO.getDescription());
         todo.setStatus(todoDTO.getStatus());
@@ -38,7 +37,7 @@ public class TodoService {
         return todo;
     }
 
-    public void deleteTodo(String id) {
+    public void deleteTodo(String id) throws TodoNotFoundException {
         repo.deleteById(id);
     }
 }
