@@ -5,21 +5,29 @@ import org.example.javangersspringrecap.model.TodoStatus;
 import org.example.javangersspringrecap.repository.TodoRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureMockRestServiceServer;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest @AutoConfigureMockMvc
+@SpringBootTest(properties = {"OPEN_AI_BASE_URL=https://example.com", "OPEN_AI_API_KEY=123", "AI_MODEL=model"}) @AutoConfigureMockMvc @AutoConfigureMockRestServiceServer
 class TodoControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private TodoRepository repo;
+    @Autowired
+    private MockRestServiceServer mockServer;
 
     @Test
     void getAllTodos_shouldReturnEmptyList_whenCalledInitially() throws Exception {
@@ -68,6 +76,20 @@ class TodoControllerTest {
 
     @Test
     void createTodo_shouldReturnTodo_WhenCalledWithTodoDTO() throws Exception {
+        mockServer.expect(requestTo("https://example.com"))
+                        .andExpect(method(HttpMethod.POST))
+                        .andRespond(withSuccess("""
+                                {
+                                    "choices": [
+                                        {
+                                            "message": {
+                                                "content": "test"
+                                            }
+                                        }
+                                    ]
+                                }
+                            """, MediaType.APPLICATION_JSON));
+
         mockMvc.perform(post("/api/todo")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
