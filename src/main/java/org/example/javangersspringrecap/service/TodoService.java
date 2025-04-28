@@ -14,6 +14,7 @@ public class TodoService {
 
     private final TodoRepository repo;
     private final IdService idService;
+    private final ChatGPTService chatGPTService;
 
     public List<Todo> getAllTodos() {
         return repo.findAll();
@@ -24,7 +25,8 @@ public class TodoService {
     }
 
     public Todo createTodo(TodoDTO todoDTO) {
-        Todo todo = new Todo(idService.generateId(), todoDTO.getDescription(), todoDTO.getStatus());
+        String checkedText = chatGPTService.checkSpelling(todoDTO.getDescription());
+        Todo todo = new Todo(idService.generateId(), checkedText, todoDTO.getStatus());
         repo.save(todo);
         return todo;
     }
